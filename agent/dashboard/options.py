@@ -15,6 +15,13 @@ class ModelOption(TypedDict):
 
 SUPPORTED_MODELS: list[ModelOption] = [
     {
+        "id": "local:Qwen3.6-35B-A3B-LM-Q8_0",
+        "label": "Local Qwen3.6 35B (llama.cpp)",
+        "efforts": ["none"],
+        "default_effort": "none",
+        "supports_images": False,
+    },
+    {
         "id": "anthropic:claude-opus-4-8",
         "label": "Opus 4.8",
         "efforts": ["low", "medium", "high", "xhigh", "max"],
@@ -60,7 +67,8 @@ SUPPORTED_MODELS: list[ModelOption] = [
 
 SUPPORTED_MODEL_IDS: frozenset[str] = frozenset(m["id"] for m in SUPPORTED_MODELS)
 
-DEFAULT_MODEL_ID: str = "openai:gpt-5.5"
+# DEFAULT_MODEL_ID: str = "openai:gpt-5.5"
+DEFAULT_MODEL_ID: str = "local:Qwen3.6-35B-A3B-LM-Q8_0"
 DEFAULT_MODEL_EFFORT: str = "medium"
 
 
