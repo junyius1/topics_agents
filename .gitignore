@@ -67,5 +67,6 @@ __pycache__/
 .Python
 *.egg-info/
 .eggs/
+archive/
 
 # 
