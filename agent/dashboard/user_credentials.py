@@ -11,7 +11,7 @@ import logging
 from datetime import UTC, datetime
 from typing import Any
 
-from langgraph_sdk import get_client
+from ..utils.thread_ops import langgraph_client
 from pydantic import BaseModel, field_validator
 
 from ..encryption import decrypt_token, encrypt_token
@@ -25,7 +25,7 @@ CURRENTS_API_BASE = "https://api.currents.dev/v1"
 
 
 def _client():
-    return get_client()
+    return langgraph_client()
 
 
 def _last4(value: str) -> str:

@@ -12,7 +12,7 @@ import os
 from datetime import UTC, datetime
 from typing import Any, Literal
 
-from langgraph_sdk import get_client
+from ..utils.thread_ops import langgraph_client
 from pydantic import BaseModel, field_validator, model_validator
 
 from .options import (
@@ -108,7 +108,7 @@ def _validate_model_effort_pair(model: str | None, effort: str | None, role: str
 
 
 def _client():
-    return get_client()
+    return langgraph_client()
 
 
 def _env_default_repo() -> str | None:

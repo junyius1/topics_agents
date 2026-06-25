@@ -18,7 +18,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import httpx
-from langgraph_sdk import get_client
+from ..utils.thread_ops import langgraph_client
 from pydantic import BaseModel, field_validator
 
 from ..encryption import decrypt_token, encrypt_token
@@ -76,7 +76,7 @@ class ProfileUpdate(BaseModel):
 
 
 def _client():
-    return get_client()
+    return langgraph_client()
 
 
 async def _get_value(namespace: list[str], key: str) -> dict[str, Any] | None:
