@@ -14,18 +14,18 @@ from topic_summarizer_agent.models import AgentState, Article, Summary
 
 logger = logging.getLogger(__name__)
 
-SUMMARIZE_PROMPT = """Summarize the following article in at most {max_tokens} words.
-Rules:
-- Output MUST be in Chinese (中文).
-- Write in clear, concise language.
-- Focus on the key points, main arguments, and conclusions.
-- Output ONLY the summary text. No title, no URL, no preamble, no formatting like bold headers.
-- Do not start with phrases like "This article", "Draft Summary", "Mental Refinement", etc.
+SUMMARIZE_PROMPT = """你是一位研究助手。请用中文总结以下文章，最多 {max_tokens} 字。
 
-Article title: {title}
-Article URL: {url}
+规则：
+- 输出必须全部是中文（简体）。即使原文是英文，也要翻译成中文总结。
+- 聚焦核心观点、主要论点和结论。
+- 只输出摘要正文。不要标题、不要 URL、不要前缀（如"这篇文章"、"摘要如下"、"Draft Summary"等）、不要粗体标题。
+- 专有名词可保留原文，但整体行文必须是中文。
 
-Article content:
+文章标题：{title}
+文章链接：{url}
+
+文章内容：
 {content}
 
 摘要：
