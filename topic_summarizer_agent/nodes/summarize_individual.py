@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 SUMMARIZE_PROMPT = """Summarize the following article in at most {max_tokens} words.
 Rules:
+- Output MUST be in Chinese (中文).
 - Write in clear, concise language.
 - Focus on the key points, main arguments, and conclusions.
 - Output ONLY the summary text. No title, no URL, no preamble, no formatting like bold headers.
@@ -27,7 +28,7 @@ Article URL: {url}
 Article content:
 {content}
 
-Summary:
+摘要：
 """
 
 
