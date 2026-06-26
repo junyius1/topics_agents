@@ -22,6 +22,16 @@ class AgentConfig:
     )
     exa_api_key: str = field(default_factory=lambda: os.environ.get("EXA_API_KEY", ""))
 
+    # Local LLM settings (used for per-article summarization)
+    local_llm_model: str = field(
+        default_factory=lambda: os.environ.get("LLM_MODEL_ID", "local:Qwen3.6-35B-A3B-LM-Q8_0")
+    )
+    local_llm_base_url: str = field(
+        default_factory=lambda: os.environ.get(
+            "LOCAL_LLM_BASE_URL", "http://localhost:8080/v1"
+        )
+    )
+
     # Model settings
     gemini_model: str = field(default="gemini-2.0-flash")
     gemini_embedding_model: str = field(default="text-embedding-004")
@@ -65,6 +75,8 @@ class AgentConfig:
             "exa_api_key",
             "gemini_model",
             "gemini_embedding_model",
+            "local_llm_model",
+            "local_llm_base_url",
             "search_count",
             "target_article_count",
             "search_timeout",

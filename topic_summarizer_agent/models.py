@@ -7,6 +7,14 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 
+class SearchResult(BaseModel):
+    """A search result with URL, title, and optional summary from Exa."""
+
+    url: str
+    title: str
+    summary: str = ""
+
+
 class Article(BaseModel):
     """A single article with its title, URL, and content."""
 
@@ -30,6 +38,7 @@ class AgentState(BaseModel):
     Attributes:
         topic: The topic being researched.
         urls: Candidate URLs from search.
+        search_results: Search results with titles from Exa.
         articles: Successfully downloaded and extracted articles.
         summaries: Individual summaries for each article.
         final_summary: The merged final summary.
@@ -38,6 +47,7 @@ class AgentState(BaseModel):
 
     topic: str
     urls: list[str] = Field(default_factory=list)
+    search_results: list[SearchResult] = Field(default_factory=list)
     articles: list[Article] = Field(default_factory=list)
     summaries: list[Summary] = Field(default_factory=list)
     final_summary: str = ""
@@ -48,6 +58,7 @@ class AgentState(BaseModel):
         return {
             "topic": self.topic,
             "urls": self.urls,
+            "search_results": [r.__dict__ for r in self.search_results],
             "articles": [article.model_dump() for article in self.articles],
             "summaries": [summary.model_dump() for summary in self.summaries],
             "final_summary": self.final_summary,
