@@ -14,9 +14,12 @@ from topic_summarizer_agent.models import AgentState, Article, Summary
 
 logger = logging.getLogger(__name__)
 
-SUMMARIZE_PROMPT = """You are a research assistant. Summarize the following article in at most {max_tokens} words.
-Focus on the key points, main arguments, and conclusions. Write in clear, concise language.
-Do NOT include the title or URL in your summary. Just the summary content.
+SUMMARIZE_PROMPT = """Summarize the following article in at most {max_tokens} words.
+Rules:
+- Write in clear, concise language.
+- Focus on the key points, main arguments, and conclusions.
+- Output ONLY the summary text. No title, no URL, no preamble, no formatting like bold headers.
+- Do not start with phrases like "This article", "Draft Summary", "Mental Refinement", etc.
 
 Article title: {title}
 Article URL: {url}
