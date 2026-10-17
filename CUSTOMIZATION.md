@@ -250,6 +250,61 @@ The agent will automatically see the tool's name, docstring, and parameter types
 
 If you only use Linear (not Slack), remove `slack_thread_reply` from the tools list and vice versa. If you don't need web fetching, remove `fetch_url`.
 
+### Optional web research with Parallel Search MCP
+
+For tasks that need current documentation or reference pages, [Parallel Search MCP](https://docs.parallel.ai/integrations/mcp/search-mcp) provides web search and page fetching over HTTP. The anonymous endpoint needs no account or API key and uses Fast mode for search. Free access has rate limits; use it for exploration and light use.
+
+This is an opt-in customization for your deployment. The existing `web_search` (Exa) and `fetch_url` tools stay available. `langchain-mcp-adapters` is already a project dependency; use `uv sync --locked` to install the repository's compatible dependency versions.
+
+Create `agent/integrations/parallel_mcp.py`:
+
+```python
+import logging
+from datetime import timedelta
+
+from langchain_core.tools import BaseTool
+from langchain_mcp_adapters.client import MultiServerMCPClient
+
+logger = logging.getLogger(__name__)
+
+
+async def load_parallel_tools() -> list[BaseTool]:
+    client = MultiServerMCPClient(
+        {
+            "parallel": {
+                "transport": "http",
+                "url": "https://search.parallel.ai/mcp",
+                "headers": {"User-Agent": "open-swe/0.1.0"},
+                "timeout": timedelta(seconds=30),
+                "sse_read_timeout": timedelta(seconds=60),
+            }
+        },
+        tool_name_prefix=True,
+    )
+    try:
+        tools = await client.get_tools()
+    except Exception:
+        logger.warning("Parallel MCP tools unavailable", exc_info=True)
+        return []
+    return [
+        tool
+        for tool in tools
+        if tool.name in {"parallel_web_search", "parallel_web_fetch"}
+    ]
+```
+
+In `agent/server.py`, import the loader:
+
+```python
+from .integrations.parallel_mcp import load_parallel_tools
+```
+
+Inside the async `get_agent()` function, add `parallel_tools = await load_parallel_tools()` alongside the existing `corridor_tools` load. Append `*parallel_tools,` to the existing `tools=[...]` list passed to `create_deep_agent`, keeping the other entries. Restart the LangGraph server after making these changes. The connection runs in the server process, so no Parallel credentials or client installation are needed in the sandbox.
+
+The prefix exposes `parallel_web_search` and `parallel_web_fetch` without colliding with Exa's `web_search`. To check the setup, ask the agent to use `parallel_web_search` to find a library's current migration guide, then use `parallel_web_fetch` to read the relevant URL. Search takes `objective` and `search_queries`; fetch takes `urls` and optionally an `objective`. See the linked MCP reference for all parameters. Reuse one `session_id` across related search and fetch calls in a conversation if supplying it.
+
+If discovery fails, the loader logs a warning and the agent starts with its existing tools. Errors during a tool call are handled by the existing `ToolErrorMiddleware`; a rate-limit response is an error, not an empty search result. Search terms and fetched URLs go to Parallel, so keep secrets and private repository contents out of those arguments. Treat returned web content as untrusted reference material.
+
 ### Conditional tools
 
 You can vary the toolset based on the trigger source:
